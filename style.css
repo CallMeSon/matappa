@@ -1,0 +1,266 @@
+/* Latar halaman baca: ganti --reader-bg dengan url(...) saat desain final ada. */
+:root {
+  --reader-bg: var(--stage-bg);
+  --stage-bg: #1e1b18;
+  --ink: #f3ece0;
+  --accent: #c9a96e;
+
+  /* Tipografi: dua keluarga, empat peran. Font final menunggu design guide klien. */
+  --font-text: Georgia, "Times New Roman", serif;
+  --font-ui: system-ui, "Segoe UI", sans-serif;
+  --fs-display: clamp(40px, 9vmin, 128px);
+  --fs-body: clamp(16px, 2.2vmin, 30px);
+  --fs-label: clamp(15px, 2vmin, 26px);
+  --fs-meta: clamp(13px, 1.6vmin, 22px);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--stage-bg);
+  color: var(--ink);
+  font-family: var(--font-text);
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  /* Izinkan geser/scroll, blokir zoom ketuk-ganda. Area buku memblokir sentuhan sendiri. */
+  touch-action: manipulation;
+  overscroll-behavior: none;
+}
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+
+.layout {
+  position: fixed;
+  inset: 0;
+  background: var(--reader-bg) center / cover no-repeat;
+}
+
+.stage {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.screen {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+}
+.screen.active { opacity: 1; pointer-events: auto; }
+
+/* ---------- Home + daftar bagian (tanpa frame) ---------- */
+/* Landscape: narasi diam di kiri, daftar bagian scroll sendiri di kanan. */
+#home {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  background: var(--stage-bg);
+  display: grid;
+  grid-template-columns: minmax(280px, 34%) minmax(0, 1fr);
+  transition: opacity 0.6s ease;
+}
+body.reading #home { opacity: 0; pointer-events: none; }
+body:not(.reading) .layout { visibility: hidden; }
+
+.intro {
+  align-self: center;
+  max-height: 100%;
+  overflow-y: auto;
+  padding: 6vmin 4vmin 6vmin 6vmin;
+}
+.intro h1 {
+  font-size: var(--fs-display);
+  font-weight: normal;
+  line-height: 1.02;
+  letter-spacing: -0.015em;
+  color: var(--accent);
+  text-wrap: balance;
+}
+#home-text { margin-top: 4vmin; }
+.intro p {
+  max-width: 60ch;
+  font-size: var(--fs-body);
+  line-height: 1.65;
+  letter-spacing: 0.005em;
+  text-wrap: pretty;
+}
+.intro p + p { margin-top: 0.9em; }
+
+.parts-scroll {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(243, 236, 224, 0.25) transparent;
+  padding: 6vmin 6vmin 6vmin 2vmin;
+  container-type: inline-size;
+  /* Di tengah bila muat; "safe" agar tidak terpotong saat daftar lebih tinggi dari layar. */
+  display: flex;
+  flex-direction: column;
+  justify-content: safe center;
+}
+.parts {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 4vmin 2.5vmin;
+}
+@media (orientation: portrait) {
+  .parts { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+/* Jumlah kolom mengikuti lebar area daftar, bukan tinggi layar. */
+@container (max-width: 960px) { .parts { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@container (max-width: 620px) { .parts { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@container (max-width: 400px) { .parts { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+.part {
+  all: unset;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border-radius: 4px;
+}
+.part:focus-visible { outline: 2px solid var(--accent); outline-offset: 6px; }
+.part-thumb {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 0.69;
+  background: #2a241e;
+  border-radius: 2px 6px 6px 2px;
+  box-shadow: 0 1vmin 3vmin rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.part:active .part-thumb { transform: scale(0.96); }
+.part-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.part-thumb.missing img { visibility: hidden; }
+
+/* Placeholder untuk gambar yang belum tersedia (thumbnail di Home dan halaman buku). */
+.part-thumb.missing::after,
+.page.missing::after {
+  content: "Belum tersedia";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 12px;
+  text-align: center;
+  font: 500 var(--fs-meta) / 1.3 var(--font-ui);
+  color: rgba(243, 236, 224, 0.6);
+}
+
+.part-label {
+  margin-top: 1.6vmin;
+  font: 600 var(--fs-label) / 1.2 var(--font-ui);
+}
+.part-meta {
+  margin-top: 0.4em;
+  font: 400 var(--fs-meta) / 1.2 var(--font-ui);
+  font-variant-numeric: tabular-nums;
+  color: rgba(243, 236, 224, 0.68);
+}
+
+/* Portrait: satu kolom, seluruh Home di-scroll. */
+@media (orientation: portrait) {
+  #home {
+    display: block;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+  }
+  .intro { max-height: none; overflow: visible; padding: 8vmin 6vmin 2vmin; }
+  .parts-scroll { display: block; overflow: visible; padding: 4vmin 6vmin 8vmin; }
+}
+
+/* ---------- Reader ---------- */
+#reader { display: flex; flex-direction: column; }
+
+#book-wrap {
+  flex: 1;
+  touch-action: none;
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2vmin;
+}
+/* Ukuran #book diisi app.js; diposisikan absolut agar tidak ikut melebarkan layout. */
+#book { position: absolute; inset: 0; margin: auto; }
+
+.page { background: #2a241e; overflow: hidden; }
+.page.missing img { visibility: hidden; }
+.page img { width: 100%; height: 100%; object-fit: contain; display: block; }
+
+.controls {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3vmin;
+  padding: 1.5vmin 0 2vmin;
+  font: 500 clamp(14px, 2.4vmin, 34px) / 1 system-ui, sans-serif;
+}
+.ctl {
+  all: unset;
+  cursor: pointer;
+  min-width: max(56px, 7vmin);
+  min-height: max(56px, 7vmin);
+  padding: 0 max(16px, 2vmin);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(243, 236, 224, 0.3);
+  border-radius: 999px;
+  font: inherit;
+  color: var(--ink);
+}
+.ctl:active { background: rgba(243, 236, 224, 0.15); }
+.ctl:disabled, .ctl[aria-disabled="true"] { opacity: 0.3; }
+#page-info { min-width: 10ch; text-align: center; font-variant-numeric: tabular-nums; }
+
+/* Landscape (default 19:6): dua halaman memenuhi tinggi layar, kontrol pindah ke kiri-kanan buku. */
+@media (orientation: landscape) {
+  #reader {
+    display: grid;
+    grid-template-columns: max(140px, 14vmin) minmax(0, 1fr) max(140px, 14vmin);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      "close book info"
+      "prev  book next"
+      ".     book .";
+    column-gap: 2vmin;
+    padding: 2vmin;
+  }
+  .controls { display: contents; }
+  #book-wrap { grid-area: book; padding: 0; }
+  #btn-close { grid-area: close; }
+  #btn-prev  { grid-area: prev; align-self: center; justify-self: center; }
+  #btn-next  { grid-area: next; align-self: center; justify-self: center; }
+  #page-info { grid-area: info; align-self: center; min-width: 0; }
+}
+
+/* ---------- Status (di dalam reader) ---------- */
+.status {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3vmin;
+  align-items: center;
+  justify-content: center;
+  background: var(--stage-bg);
+  font: clamp(14px, 2.4vmin, 32px) / 1.4 system-ui, sans-serif;
+  text-align: center;
+  padding: 4vmin;
+  transition: opacity 0.4s;
+}
+.status.hidden { opacity: 0; pointer-events: none; }

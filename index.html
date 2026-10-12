@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <title>I La Galigo — Naskah Digital</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Home: narasi + daftar 12 bagian, tanpa frame -->
+  <section id="home">
+    <div class="intro">
+      <h1 id="home-title"></h1>
+      <div id="home-text"></div>
+    </div>
+    <div class="parts-scroll">
+      <div class="parts" id="parts"></div>
+    </div>
+  </section>
+
+  <!-- Book viewer, memenuhi layar; latar (background) diatur di style.css -->
+  <div class="layout">
+
+    <main class="stage">
+      <section id="reader" class="screen active">
+        <div id="book-wrap"><div id="book"></div></div>
+        <nav class="controls">
+          <button id="btn-close" class="ctl">Kembali</button>
+          <button id="btn-prev" class="ctl" aria-label="Halaman sebelumnya">&#9664;</button>
+          <span id="page-info">–</span>
+          <button id="btn-next" class="ctl" aria-label="Halaman berikutnya">&#9654;</button>
+        </nav>
+      </section>
+
+      <div id="status" class="status hidden">
+        <p id="status-text"></p>
+        <button id="status-back" class="ctl" hidden>Kembali</button>
+      </div>
+    </main>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="naskah/parts.js"></script>
+  <script src="vendor/page-flip.browser.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
