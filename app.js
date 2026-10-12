@@ -118,8 +118,7 @@
       flippingTime: cfg.flipMs,
       maxShadowOpacity: 0.6,
       mobileScrollSupport: false,
-      showPageCorners: false,   // layar sentuh: tanpa efek lipatan sudut saat pointer lewat tepi
-      swipeDistance: 40,
+      useMouseEvents: false,    // geser/ketuk ditangani sendiri di bawah: animasi tidak mengikuti pointer
       startPage: Math.min(state.current, n - 1),
     });
     state.flip.loadFromHTML(state.pageEls);
@@ -139,8 +138,25 @@
     $("btn-next").setAttribute("aria-disabled", i >= n - (pair ? 2 : 1));
   }
 
-  // Sentuhan di buku tidak boleh memicu event mouse tiruan (hover/klik di tepi kiri-kanan).
-  $("book-wrap").addEventListener("touchend", (e) => e.cancelable && e.preventDefault(), { passive: false });
+  // Geser = balik halaman dengan animasi penuh, sama seperti tombol. Halaman tidak mengikuti jari.
+  const SWIPE_MIN = 40;   // px
+  const SWIPE_MAX_MS = 800;
+  let swipe = null;
+  const bookWrap = $("book-wrap");
+  bookWrap.addEventListener("pointerdown", (e) => {
+    swipe = { id: e.pointerId, x: e.clientX, y: e.clientY, t: Date.now() };
+  });
+  bookWrap.addEventListener("pointerup", (e) => {
+    if (!swipe || swipe.id !== e.pointerId) return;
+    const dx = e.clientX - swipe.x;
+    const dy = e.clientY - swipe.y;
+    const fast = Date.now() - swipe.t < SWIPE_MAX_MS;
+    swipe = null;
+    if (!fast || Math.abs(dx) < SWIPE_MIN || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+    if (dx < 0) state.flip?.flipNext();
+    else state.flip?.flipPrev();
+  });
+  bookWrap.addEventListener("pointercancel", () => { swipe = null; });
 
   // Ukur ulang buku setiap area naskah berubah ukuran (resize jendela, rotasi layar).
   let resizeTimer;
