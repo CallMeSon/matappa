@@ -17,6 +17,9 @@ window.VIEWER_CONFIG = {
   // Lama animasi balik halaman (ms).
   flipMs: 900,
 
+  // Lama animasi balik halaman saat slider digeser (ms), dibuat lebih cepat agar mengikuti jari.
+  scrubFlipMs: 300,
+
   // Halaman pertama dan terakhir diperlakukan sebagai sampul keras (seperti buku).
   hardCover: true,
 

@@ -63,10 +63,10 @@
   }
 
   // Muat gambar hanya di sekitar halaman aktif; lepas yang jauh agar memori tidak penuh.
-  function loadNear(index) {
+  function loadNear(...centers) {
     state.pageEls.forEach((el, i) => {
       const img = el.querySelector("img");
-      if (Math.abs(i - index) <= cfg.preload) {
+      if (centers.some((c) => Math.abs(i - c) <= cfg.preload)) {
         if (!img.getAttribute("src")) img.src = state.urls[i];
       } else if (img.getAttribute("src")) {
         img.removeAttribute("src");
@@ -75,6 +75,7 @@
   }
 
   function destroyBook() {
+    scrubTarget = null;
     if (state.flip) state.flip.destroy();
     state.flip = null;
     state.pageEls = [];
@@ -123,9 +124,10 @@
     });
     state.flip.loadFromHTML(state.pageEls);
     state.flip.on("flip", (e) => {
-      loadNear(e.data);
+      loadNear(e.data, scrubTarget ?? e.data);
       updateInfo();
     });
+    state.flip.on("changeState", (e) => e.data === "read" && pump());
     updateInfo();
   }
 
@@ -133,10 +135,109 @@
     const i = state.flip.getCurrentPageIndex();
     const n = state.flip.getPageCount();
     const pair = state.flip.getOrientation() === "landscape" && i > 0 && i + 1 < n;
-    $("page-info").textContent = pair ? `${i + 1}–${i + 2} / ${n}` : `${i + 1} / ${n}`;
-    $("btn-prev").setAttribute("aria-disabled", i === 0);
-    $("btn-next").setAttribute("aria-disabled", i >= n - (pair ? 2 : 1));
+    if (!sliding) $("page-info").textContent = pair ? `${i + 1}–${i + 2} / ${n}` : `${i + 1} / ${n}`;
+    const atStart = i === 0;
+    const atEnd = i >= n - (pair ? 2 : 1);
+    for (const id of ["btn-prev", "btn-first"]) $(id).setAttribute("aria-disabled", atStart);
+    for (const id of ["btn-next", "btn-last"]) $(id).setAttribute("aria-disabled", atEnd);
+    const slider = $("page-slider");
+    slider.max = n;
+    if (!sliding) {
+      slider.value = i + 1;
+      setSliderFill();
+    }
   }
+
+  // Lompat ke halaman (indeks 0-based) dengan satu animasi balik halaman.
+  function jumpTo(index) {
+    if (!state.flip) return;
+    const n = state.flip.getPageCount();
+    const target = Math.max(0, Math.min(n - 1, index));
+    loadNear(state.flip.getCurrentPageIndex(), target);
+    state.flip.flip(target);
+  }
+
+  // ---------- Slider ----------
+  let sliding = false;
+  const slider = $("page-slider");
+  function setSliderFill() {
+    const min = +slider.min, max = +slider.max;
+    slider.style.setProperty("--p", max > min ? `${((slider.value - min) / (max - min)) * 100}%` : "0%");
+  }
+  // Buku mengikuti slider: tiap perpindahan tetap berupa animasi balik halaman.
+  // Lompatan jauh diposisikan instan sampai dekat tujuan, lalu dua-tiga halaman terakhir dianimasikan.
+  // Animasi dipercepat selama slider digeser; slider sendiri tidak pernah terblokir.
+  let scrubTarget = null;
+  const settings = () => state.flip?.getSettings?.() ?? state.flip?.app?.getSettings?.();
+  function pump() {
+    if (scrubTarget === null || !state.flip) return;
+    if (state.flip.getState() !== "read") return;   // sedang animasi; lanjut saat kembali ke "read"
+    const cur = state.flip.getCurrentPageIndex();
+    const n = state.flip.getPageCount();
+    const target = Math.max(0, Math.min(n - 1, scrubTarget));
+    loadNear(cur, target);
+    const s = settings();
+    if (s) s.flippingTime = sliding ? cfg.scrubFlipMs : cfg.flipMs;
+    // Halaman satu spread = 2 indeks; sudah di spread tujuan bila selisih <= 1 pada posisi yang sama.
+    if (cur === target || (state.flip.getOrientation() === "landscape" && cur > 0 && cur + 1 < n && (target === cur || target === cur + 1))) {
+      scrubTarget = null;
+      if (!sliding) updateInfo();
+      return;
+    }
+    const gap = Math.abs(target - cur);
+    if (gap > 4) {
+      state.flip.turnToPage(target + (target > cur ? -3 : 3));
+      requestAnimationFrame(() => state.flip && state.flip.flip(target));
+    } else {
+      state.flip.flip(target);
+    }
+  }
+  slider.addEventListener("input", () => {
+    sliding = true;
+    setSliderFill();
+    $("page-info").textContent = `${slider.value} / ${slider.max}`;
+    scrubTarget = +slider.value - 1;
+    pump();
+  });
+  slider.addEventListener("change", () => {
+    sliding = false;
+    pump();
+    if (state.flip && scrubTarget === null) updateInfo();
+  });
+
+  // ---------- Papan angka ----------
+  const gotoEl = $("goto");
+  let gotoVal = "";
+  function renderGoto() {
+    $("goto-val").textContent = gotoVal || "–";
+    $("goto-total").textContent = `/ ${state.urls.length}`;
+  }
+  function openGoto() {
+    if (!state.flip) return;
+    gotoVal = "";
+    renderGoto();
+    gotoEl.classList.remove("hidden");
+  }
+  const closeGoto = () => gotoEl.classList.add("hidden");
+  const gotoOpen = () => !gotoEl.classList.contains("hidden");
+  function gotoKey(k) {
+    const digits = String(state.urls.length).length;
+    if (k === "back") gotoVal = gotoVal.slice(0, -1);
+    else if (k === "go") {
+      const page = parseInt(gotoVal, 10);
+      closeGoto();
+      if (page) jumpTo(page - 1);
+      return;
+    } else if (gotoVal.length < digits) gotoVal = (gotoVal + k).replace(/^0+/, "");
+    renderGoto();
+  }
+  $("page-info").addEventListener("click", openGoto);
+  $("goto-pad").addEventListener("click", (e) => {
+    const k = e.target.closest("[data-k]")?.dataset.k;
+    if (k) gotoKey(k);
+  });
+  $("goto-cancel").addEventListener("click", closeGoto);
+  gotoEl.addEventListener("click", (e) => e.target === gotoEl && closeGoto());
 
   // Geser = balik halaman dengan animasi penuh, sama seperti tombol. Halaman tidak mengikuti jari.
   const SWIPE_MIN = 40;   // px
@@ -194,6 +295,7 @@
   }
 
   function goHome() {
+    closeGoto();
     state.part = null;
     document.body.classList.remove("reading");
     destroyBook();
@@ -203,8 +305,17 @@
   $("status-back").addEventListener("click", goHome);
   $("btn-prev").addEventListener("click", () => state.flip?.flipPrev());
   $("btn-next").addEventListener("click", () => state.flip?.flipNext());
+  $("btn-first").addEventListener("click", () => jumpTo(0));
+  $("btn-last").addEventListener("click", () => jumpTo(Infinity));
   document.addEventListener("keydown", (e) => {
     if (!state.flip) return;
+    if (gotoOpen()) {
+      if (/^\d$/.test(e.key)) gotoKey(e.key);
+      else if (e.key === "Backspace") gotoKey("back");
+      else if (e.key === "Enter") gotoKey("go");
+      else if (e.key === "Escape") closeGoto();
+      return;
+    }
     if (e.key === "ArrowRight") state.flip.flipNext();
     if (e.key === "ArrowLeft") state.flip.flipPrev();
     if (e.key === "Escape") goHome();

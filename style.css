@@ -226,27 +226,114 @@ body:not(.reading) .layout { visibility: hidden; }
 .ctl:active { background: rgba(243, 236, 224, 0.15); }
 .ctl:disabled, .ctl[aria-disabled="true"] { opacity: 0.3; }
 #page-info { min-width: 10ch; text-align: center; font-variant-numeric: tabular-nums; }
+#page-info { border-style: dashed; white-space: nowrap; padding: 0 max(8px, 1vmin); min-width: 0; }
 
 /* Landscape (default 19:6): dua halaman memenuhi tinggi layar, kontrol pindah ke kiri-kanan buku. */
 @media (orientation: landscape) {
   #reader {
     display: grid;
     grid-template-columns: max(140px, 14vmin) minmax(0, 1fr) max(140px, 14vmin);
-    grid-template-rows: auto minmax(0, 1fr) auto;
     grid-template-areas:
       "close book info"
       "prev  book next"
-      ".     book .";
+      "first book last"
+      ".     book ."
+      ".     slider .";
+    grid-template-rows: auto auto auto minmax(0, 1fr) auto;
     column-gap: 2vmin;
     padding: 2vmin;
   }
   .controls { display: contents; }
   #book-wrap { grid-area: book; padding: 0; }
+  #slider-row { grid-area: slider; padding-top: 0.5vmin; }
   #btn-close { grid-area: close; }
-  #btn-prev  { grid-area: prev; align-self: center; justify-self: center; }
-  #btn-next  { grid-area: next; align-self: center; justify-self: center; }
-  #page-info { grid-area: info; align-self: center; min-width: 0; }
+  #btn-prev  { grid-area: prev;  align-self: center; justify-self: center; margin-top: 2vmin; }
+  #btn-next  { grid-area: next;  align-self: center; justify-self: center; margin-top: 2vmin; }
+  #btn-first { grid-area: first; align-self: center; justify-self: center; margin-top: 2vmin; }
+  #btn-last  { grid-area: last;  align-self: center; justify-self: center; margin-top: 2vmin; }
+  #page-info { grid-area: info; align-self: center; justify-self: center; }
 }
+
+/* ---------- Slider halaman ---------- */
+#slider-row { flex: none; padding: 0 4vmin; display: flex; align-items: center; }
+#page-slider {
+  --p: 0%;
+  --thumb: max(22px, 2.6vmin);
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: max(36px, 4vmin);   /* area sentuh lebih besar dari thumb */
+  background: transparent;
+  touch-action: none;
+  cursor: pointer;
+}
+#page-slider::-webkit-slider-runnable-track {
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(to right, var(--accent) var(--p), rgba(243, 236, 224, 0.25) var(--p));
+}
+#page-slider::-moz-range-track { height: 8px; border-radius: 4px; background: rgba(243, 236, 224, 0.25); }
+#page-slider::-moz-range-progress { height: 8px; border-radius: 4px; background: var(--accent); }
+#page-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: var(--thumb);
+  height: var(--thumb);
+  margin-top: calc((8px - var(--thumb)) / 2);
+  border-radius: 50%;
+  background: var(--ink);
+  border: 2px solid var(--accent);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+#page-slider::-moz-range-thumb {
+  width: var(--thumb);
+  height: var(--thumb);
+  border-radius: 50%;
+  background: var(--ink);
+  border: 2px solid var(--accent);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* ---------- Papan angka lompat halaman ---------- */
+.goto {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.7);
+  transition: opacity 0.25s;
+}
+.goto.hidden { opacity: 0; pointer-events: none; }
+.goto-card {
+  display: flex;
+  flex-direction: column;
+  gap: 2vmin;
+  align-items: stretch;
+  padding: 3vmin;
+  border-radius: 16px;
+  background: #2a241e;
+  border: 1px solid rgba(243, 236, 224, 0.2);
+  max-height: 96%;
+}
+.goto-display {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.4em;
+  min-height: 1.4em;
+  font: 600 clamp(28px, 7vmin, 90px) / 1.2 var(--font-ui);
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+}
+#goto-total { font-size: 0.55em; color: rgba(243, 236, 224, 0.6); }
+.goto-pad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5vmin;
+}
+.goto-pad .ctl { font: 600 clamp(22px, 5vmin, 64px) / 1 var(--font-ui); min-width: max(72px, 10vmin); min-height: max(64px, 9vmin); }
+.goto-pad .goto-go { background: var(--accent); color: #1e1b18; border-color: var(--accent); font-size: clamp(18px, 3.4vmin, 44px); }
+#goto-cancel { align-self: center; font: 500 clamp(16px, 2.6vmin, 34px) / 1 var(--font-ui); }
 
 /* ---------- Status (di dalam reader) ---------- */
 .status {

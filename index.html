@@ -24,12 +24,31 @@
     <main class="stage">
       <section id="reader" class="screen active">
         <div id="book-wrap"><div id="book"></div></div>
+        <div id="slider-row">
+          <input id="page-slider" type="range" min="1" max="1" step="1" value="1" aria-label="Geser ke halaman">
+        </div>
         <nav class="controls">
           <button id="btn-close" class="ctl">Kembali</button>
+          <button id="btn-first" class="ctl" aria-label="Ke halaman awal">&#124;&#9664;</button>
           <button id="btn-prev" class="ctl" aria-label="Halaman sebelumnya">&#9664;</button>
-          <span id="page-info">–</span>
+          <button id="page-info" class="ctl" aria-label="Pilih nomor halaman">–</button>
           <button id="btn-next" class="ctl" aria-label="Halaman berikutnya">&#9654;</button>
+          <button id="btn-last" class="ctl" aria-label="Ke halaman akhir">&#9654;&#124;</button>
         </nav>
+
+        <!-- Papan angka di layar untuk lompat ke nomor halaman -->
+        <div id="goto" class="goto hidden" role="dialog" aria-label="Lompat ke halaman">
+          <div class="goto-card">
+            <div class="goto-display"><span id="goto-val"></span><span id="goto-total"></span></div>
+            <div class="goto-pad" id="goto-pad">
+              <button class="ctl" data-k="1">1</button><button class="ctl" data-k="2">2</button><button class="ctl" data-k="3">3</button>
+              <button class="ctl" data-k="4">4</button><button class="ctl" data-k="5">5</button><button class="ctl" data-k="6">6</button>
+              <button class="ctl" data-k="7">7</button><button class="ctl" data-k="8">8</button><button class="ctl" data-k="9">9</button>
+              <button class="ctl" data-k="back" aria-label="Hapus">&#9003;</button><button class="ctl" data-k="0">0</button><button class="ctl goto-go" data-k="go">Buka</button>
+            </div>
+            <button id="goto-cancel" class="ctl">Batal</button>
+          </div>
+        </div>
       </section>
 
       <div id="status" class="status hidden">
