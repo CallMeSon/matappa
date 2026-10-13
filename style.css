@@ -516,8 +516,7 @@ body[data-view="reading"] .brand-bg { visibility: hidden; }
 }
 .ico { width: calc(36 * var(--u)); height: calc(36 * var(--u)); min-width: 20px; min-height: 20px; display: block; }
 body[data-view="about"] .btn-home,
-body[data-view="home"] .btn-home,
-body[data-view="reading"] .btn-home { opacity: 1; pointer-events: auto; }
+body[data-view="home"] .btn-home { opacity: 1; pointer-events: auto; }
 #page-info { text-align: center; font-variant-numeric: tabular-nums; }
 #page-info { border-style: dashed; white-space: nowrap; padding: 0 max(8px, 1vmin); min-width: 0; }
 
@@ -545,8 +544,6 @@ body[data-view="reading"] .btn-home { opacity: 1; pointer-events: auto; }
   #btn-first { grid-area: first; align-self: center; justify-self: center; margin-top: 2vmin; }
   #btn-last  { grid-area: last;  align-self: center; justify-self: center; margin-top: 2vmin; }
   #page-info { grid-area: info; align-self: center; justify-self: center; }
-  /* Kolom kanan turun sedikit supaya X Beranda di pojok kanan atas tidak menimpa. */
-  #page-info, #btn-next, #btn-last { position: relative; top: max(80px, calc(120 * var(--u))); }
 }
 
 /* ---------- Reader di HP (tegak) ----------
@@ -557,7 +554,7 @@ body[data-view="reading"] .btn-home { opacity: 1; pointer-events: auto; }
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
     grid-template-areas:
-      "close info   ."
+      "close .      info"
       "book  book   book"
       "prev  slider next";
     grid-template-rows: auto minmax(0, 1fr) auto;
@@ -570,9 +567,7 @@ body[data-view="reading"] .btn-home { opacity: 1; pointer-events: auto; }
   #book-wrap { grid-area: book; padding: 0; }
   #slider-row { grid-area: slider; padding: 0; }
   #btn-close { grid-area: close; }
-  #page-info { grid-area: info; justify-self: center; }
-  /* X Beranda di pojok kanan atas, sejajar tombol Kembali. */
-  .ctl.btn-home { box-sizing: border-box; top: max(12px, env(safe-area-inset-top)); right: max(12px, env(safe-area-inset-right)); width: 51px; min-width: 0; min-height: 51px; height: 51px; padding: 0; }
+  #page-info { grid-area: info; }
   #btn-prev { grid-area: prev; }
   #btn-next { grid-area: next; }
   .ctl { min-height: 48px; min-width: 48px; padding: 0 18px; font-size: 16px; }
