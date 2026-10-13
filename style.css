@@ -526,7 +526,7 @@ body[data-view="home"] .btn-home { opacity: 1; pointer-events: auto; }
     display: grid;
     grid-template-columns: max(140px, 14vmin) minmax(0, 1fr) max(140px, 14vmin);
     grid-template-areas:
-      "close book info"
+      "info book close"
       "prev  book next"
       "first book last"
       ".     book ."
@@ -554,7 +554,7 @@ body[data-view="home"] .btn-home { opacity: 1; pointer-events: auto; }
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
     grid-template-areas:
-      "close .      info"
+      "info .      close"
       "book  book   book"
       "prev  slider next";
     grid-template-rows: auto minmax(0, 1fr) auto;
@@ -582,7 +582,7 @@ body[data-view="home"] .btn-home { opacity: 1; pointer-events: auto; }
 /* HP mendatar: tinggi layar sempit, buang kontrol cadangan agar kolom samping muat. */
 @media (orientation: landscape) and (max-height: 520px) {
   #btn-first, #btn-last { display: none; }
-  #reader { grid-template-rows: auto auto minmax(0, 1fr) auto; grid-template-areas: "close book info" "prev book next" ". book ." ". slider ."; }
+  #reader { grid-template-rows: auto auto minmax(0, 1fr) auto; grid-template-areas: "info book close" "prev book next" ". book ." ". slider ."; }
   .ctl { min-height: 48px; min-width: 48px; }
 }
 
