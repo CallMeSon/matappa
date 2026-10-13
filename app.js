@@ -135,6 +135,8 @@
     state.pageEls = state.urls.map((_, i) => {
       const el = document.createElement("div");
       el.className = "page";
+      // Dengan sampul, indeks ganjil = halaman kiri, genap = kanan. Mode satu halaman: tengah.
+      if (spread) el.dataset.side = i % 2 ? "left" : "right";
       if (cfg.hardCover && (i === 0 || i === n - 1)) el.dataset.density = "hard";
       const img = document.createElement("img");
       img.alt = `Halaman ${i + 1}`;
@@ -331,16 +333,24 @@
     show("reading");
     setStatus("Memuat naskah…");
 
-    const probe = new Image();
-    probe.onload = () => {
+    // Rasio buku = median dari beberapa halaman contoh (sampul biasanya menyimpang).
+    // Semua contoh gagal dimuat = bagian dianggap belum tersedia.
+    const n = part.pages;
+    const samples = [...new Set(Array.from({ length: 9 }, (_, k) => Math.min(n - 1, Math.round(((k + 1) * (n - 1)) / 10))))];
+    Promise.all(samples.map((i) => new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve(img.naturalWidth / img.naturalHeight);
+      loadImg(img, state.urls[i], () => resolve(null));
+    }))).then((ratios) => {
       if (state.part !== part) return;
-      state.ratio = probe.naturalWidth / probe.naturalHeight;
+      const ok = ratios.filter(Boolean).sort((a, b) => a - b);
+      if (!ok.length) {
+        setStatus(`${cfg.partLabel.replace("{n}", part.n)} belum tersedia. Silakan pilih bagian lain.`, true);
+        return;
+      }
+      state.ratio = ok[Math.floor(ok.length / 2)];
       hideStatus();
       buildBook();
-    };
-    loadImg(probe, state.urls[0], () => {
-      if (state.part !== part) return;
-      setStatus(`${cfg.partLabel.replace("{n}", part.n)} belum tersedia. Silakan pilih bagian lain.`, true);
     });
   }
 

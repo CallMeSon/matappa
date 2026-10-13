@@ -462,7 +462,10 @@ body[data-view="reading"] .brand-bg { visibility: hidden; }
 /* Ukuran #book diisi app.js; diposisikan absolut agar tidak ikut melebarkan layout. */
 #book { position: absolute; inset: 0; margin: auto; }
 
-.page { background: #0a1f40; overflow: hidden; }
+.page { background: var(--reader-bg); overflow: hidden; }
+/* Halaman menempel ke lipatan: sisa lebar jatuh di tepi luar buku (warnanya menyatu dengan latar). */
+.page[data-side="left"] img  { object-position: right center; }
+.page[data-side="right"] img { object-position: left center; }
 .page.missing img { visibility: hidden; }
 .page img { width: 100%; height: 100%; object-fit: contain; display: block; }
 
