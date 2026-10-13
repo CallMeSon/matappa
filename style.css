@@ -549,6 +549,46 @@ body[data-view="home"] .btn-home { opacity: 1; pointer-events: auto; }
   #page-info { grid-area: info; align-self: center; justify-self: center; }
 }
 
+/* ---------- Reader di HP (tegak) ----------
+   Hanya empat kontrol: Kembali dan nomor halaman di atas; panah, slider, panah di bawah, dalam jangkauan ibu jari.
+   Awal/akhir ditangani slider, Beranda ditangani layar daftar bagian; geser tetap membalik halaman. */
+@media (max-width: 720px) and (orientation: portrait) {
+  #reader {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      "close .      info"
+      "book  book   book"
+      "prev  slider next";
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    column-gap: 8px;
+    row-gap: 4px;
+    padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+  }
+  .controls { display: contents; }
+  #btn-first, #btn-last, #btn-home-reader { display: none; }
+  #book-wrap { grid-area: book; padding: 0; }
+  #slider-row { grid-area: slider; padding: 0; }
+  #btn-close { grid-area: close; }
+  #page-info { grid-area: info; }
+  #btn-prev { grid-area: prev; }
+  #btn-next { grid-area: next; }
+  .ctl { min-height: 48px; min-width: 48px; padding: 0 18px; font-size: 16px; }
+  #btn-prev, #btn-next { width: 56px; height: 56px; padding: 0; font-size: 18px; }
+  #page-info { padding: 0 16px; border-style: solid; font-size: 16px; }
+  #page-slider { --thumb: 28px; height: 56px; }
+  .goto-pad .ctl { min-width: 72px; min-height: 60px; font-size: 24px; }
+  .goto-card { padding: 16px; gap: 12px; }
+  .goto-display { font-size: 36px; }
+}
+
+/* HP mendatar: tinggi layar sempit, buang kontrol cadangan agar kolom samping muat. */
+@media (orientation: landscape) and (max-height: 520px) {
+  #btn-first, #btn-last, #btn-home-reader { display: none; }
+  #reader { grid-template-rows: auto auto minmax(0, 1fr) auto; grid-template-areas: "close book info" "prev book next" ". book ." ". slider ."; }
+  .ctl { min-height: 48px; min-width: 48px; }
+}
+
 /* ---------- Slider halaman ---------- */
 #slider-row { flex: none; padding: 0 4vmin; display: flex; align-items: center; }
 #page-slider {
