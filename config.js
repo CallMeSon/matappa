@@ -31,7 +31,7 @@ window.VIEWER_CONFIG = {
   partLabel: "Bagian {n}",
 
   // Kembali ke layar awal setelah sekian detik tanpa sentuhan. 0 = nonaktif.
-  idleSeconds: 120,
+  idleSeconds: 60,
 
   // Lama animasi balik halaman (ms).
   flipMs: 900,

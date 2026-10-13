@@ -352,6 +352,8 @@
   }
 
   $("btn-close").addEventListener("click", () => goHome());
+  $("btn-home").addEventListener("click", () => goHome("cover"));
+  $("btn-home-reader").addEventListener("click", () => goHome("cover"));
   $("status-back").addEventListener("click", () => goHome());
   $("btn-prev").addEventListener("click", () => state.flip?.flipPrev());
   $("btn-next").addEventListener("click", () => state.flip?.flipNext());
@@ -377,7 +379,7 @@
     clearTimeout(idleTimer);
     if (cfg.idleSeconds > 0) idleTimer = setTimeout(() => goHome("cover"), cfg.idleSeconds * 1000);
   }
-  ["pointerdown", "keydown"].forEach((ev) => document.addEventListener(ev, resetIdle));
+  ["pointerdown", "pointermove", "wheel", "keydown"].forEach((ev) => document.addEventListener(ev, resetIdle));
   resetIdle();
 
   // Blokir menu klik kanan / tekan lama di layar sentuh.
