@@ -13,7 +13,46 @@
     current: 0,
   };
 
-  // ---------- Home ----------
+  // Gambar bisa gagal dimuat sesaat (disk atau server sibuk). Coba ulang beberapa kali sebelum
+  // dianggap tidak tersedia; ?r=n memaksa browser memuat ulang alih-alih memakai hasil gagal.
+  const RETRIES = 3;
+  function loadImg(img, url, onFail) {
+    img._url = url;
+    img._tries = 0;
+    img.onerror = () => {
+      if (img._url !== url || !img.getAttribute("src")) return;   // src sudah diganti atau dilepas
+      if (img._tries >= RETRIES) return onFail();
+      const n = ++img._tries;
+      setTimeout(() => {
+        if (img._url === url && img.getAttribute("src")) img.src = `${url}?r=${n}`;
+      }, 500 * n);
+    };
+    img.src = url;
+  }
+  function unloadImg(img) {
+    img._url = null;
+    img.removeAttribute("src");
+  }
+
+  // ---------- 01 Layar awal + 02 Tentang naskah ----------
+  $("cover-title").textContent = cfg.coverTitle;
+  $("cover-hint").textContent = cfg.coverHint;
+  $("about-title").textContent = cfg.aboutTitle;
+  $("about-photo-label").textContent = cfg.aboutPhotoLabel;
+  const photo = $("about-photo");
+  const photoImg = photo.querySelector("img");
+  photo.classList.add("missing");
+  photoImg.onload = () => photo.classList.remove("missing");
+  if (cfg.aboutPhoto) loadImg(photoImg, cfg.aboutPhoto, () => photo.classList.add("missing"));
+  for (const text of cfg.aboutText) {
+    const p = document.createElement("p");
+    p.textContent = text;
+    $("about-text").appendChild(p);
+  }
+  $("btn-start").textContent = cfg.startLabel;
+
+  // ---------- 03 Daftar bagian ----------
+  $("home-thanks").textContent = cfg.thanks;
   $("home-title").textContent = cfg.title;
   for (const text of cfg.intro) {
     const p = document.createElement("p");
@@ -30,9 +69,8 @@
       <span class="part-meta"></span>`;
     const thumb = btn.querySelector(".part-thumb");
     const timg = thumb.querySelector("img");
-    timg.onerror = () => thumb.classList.add("missing");
     timg.onload = () => thumb.classList.remove("missing");
-    timg.src = pageUrl(part, 0);
+    loadImg(timg, pageUrl(part, 0), () => thumb.classList.add("missing"));
     btn.querySelector(".part-label").textContent = cfg.partLabel.replace("{n}", part.n);
     btn.querySelector(".part-meta").textContent = `${part.pages} halaman`;
     btn.addEventListener("click", () => openPart(part));
@@ -67,9 +105,9 @@
     state.pageEls.forEach((el, i) => {
       const img = el.querySelector("img");
       if (centers.some((c) => Math.abs(i - c) <= cfg.preload)) {
-        if (!img.getAttribute("src")) img.src = state.urls[i];
+        if (!img.getAttribute("src")) loadImg(img, state.urls[i], () => el.classList.add("missing"));
       } else if (img.getAttribute("src")) {
-        img.removeAttribute("src");
+        unloadImg(img);
       }
     });
   }
@@ -101,8 +139,7 @@
       const img = document.createElement("img");
       img.alt = `Halaman ${i + 1}`;
       img.draggable = false;
-      // Halaman yang file-nya belum ada diganti placeholder, buku tetap bisa dibalik.
-      img.onerror = () => img.getAttribute("src") && el.classList.add("missing");
+      // Halaman yang tetap gagal dimuat diganti placeholder (lihat loadNear), buku tetap bisa dibalik.
       img.onload = () => el.classList.remove("missing");
       el.appendChild(img);
       book.appendChild(el);
@@ -110,7 +147,7 @@
     });
     loadNear(state.current);
 
-    state.flip = new St.PageFlip(book, {
+    const flip = new St.PageFlip(book, {
       width: pw,
       height: ph,
       size: "fixed",
@@ -122,16 +159,21 @@
       useMouseEvents: false,    // geser/ketuk ditangani sendiri di bawah: animasi tidak mengikuti pointer
       startPage: Math.min(state.current, n - 1),
     });
-    state.flip.loadFromHTML(state.pageEls);
-    state.flip.on("flip", (e) => {
+    state.flip = flip;
+    flip.loadFromHTML(state.pageEls);
+    // Animasi buku lama bisa selesai setelah buku diganti (mis. Kembali saat halaman dibalik);
+    // abaikan kejadian dari buku yang sudah tidak aktif.
+    flip.on("flip", (e) => {
+      if (flip !== state.flip) return;
       loadNear(e.data, scrubTarget ?? e.data);
       updateInfo();
     });
-    state.flip.on("changeState", (e) => e.data === "read" && pump());
+    flip.on("changeState", (e) => flip === state.flip && e.data === "read" && pump());
     updateInfo();
   }
 
   function updateInfo() {
+    if (!state.flip) return;
     const i = state.flip.getCurrentPageIndex();
     const n = state.flip.getPageCount();
     const pair = state.flip.getOrientation() === "landscape" && i > 0 && i + 1 < n;
@@ -272,12 +314,21 @@
   }).observe($("book-wrap"));
 
   // ---------- Navigasi layar ----------
+  // Urutan: cover (01) → about (02) → home (03) → reading.
+  const show = (view) => { document.body.dataset.view = view; };
+
+  $("cover").addEventListener("click", () => show("about"));
+  $("btn-start").addEventListener("click", () => {
+    $("home").querySelector(".parts-scroll").scrollTop = 0;
+    show("home");
+  });
+
   function openPart(part) {
     state.part = part;
     state.urls = Array.from({ length: part.pages }, (_, i) => pageUrl(part, i));
     state.current = 0;
     destroyBook();
-    document.body.classList.add("reading");
+    show("reading");
     setStatus("Memuat naskah…");
 
     const probe = new Image();
@@ -287,22 +338,21 @@
       hideStatus();
       buildBook();
     };
-    probe.onerror = () => {
+    loadImg(probe, state.urls[0], () => {
       if (state.part !== part) return;
       setStatus(`${cfg.partLabel.replace("{n}", part.n)} belum tersedia. Silakan pilih bagian lain.`, true);
-    };
-    probe.src = state.urls[0];
+    });
   }
 
-  function goHome() {
+  function goHome(view = "home") {
     closeGoto();
     state.part = null;
-    document.body.classList.remove("reading");
+    show(view);
     destroyBook();
   }
 
-  $("btn-close").addEventListener("click", goHome);
-  $("status-back").addEventListener("click", goHome);
+  $("btn-close").addEventListener("click", () => goHome());
+  $("status-back").addEventListener("click", () => goHome());
   $("btn-prev").addEventListener("click", () => state.flip?.flipPrev());
   $("btn-next").addEventListener("click", () => state.flip?.flipNext());
   $("btn-first").addEventListener("click", () => jumpTo(0));
@@ -321,11 +371,11 @@
     if (e.key === "Escape") goHome();
   });
 
-  // Kembali ke Home bila tidak disentuh.
+  // Kembali ke layar awal bila tidak disentuh.
   let idleTimer;
   function resetIdle() {
     clearTimeout(idleTimer);
-    if (cfg.idleSeconds > 0) idleTimer = setTimeout(goHome, cfg.idleSeconds * 1000);
+    if (cfg.idleSeconds > 0) idleTimer = setTimeout(() => goHome("cover"), cfg.idleSeconds * 1000);
   }
   ["pointerdown", "keydown"].forEach((ev) => document.addEventListener(ev, resetIdle));
   resetIdle();

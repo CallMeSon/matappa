@@ -6,20 +6,107 @@
   <title>I La Galigo — Naskah Digital</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <!-- Home: narasi + daftar 12 bagian, tanpa frame -->
-  <section id="home">
-    <div class="intro">
-      <h1 id="home-title"></h1>
-      <div id="home-text"></div>
+<body data-view="cover">
+  <!-- Latar brand bersama untuk layar 01–03: lingkaran dan kapal samar. -->
+  <div class="brand-bg" aria-hidden="true">
+    <img class="bg-circle" src="assets/lingkaran.svg" alt="">
+    <img class="bg-ship" src="assets/kapal.svg" alt="">
+  </div>
+
+  <!-- 01 Judul: layar awal dan layar idle. Sentuh di mana saja untuk lanjut. -->
+  <section id="cover" class="view" aria-label="Layar awal">
+    <div class="deco" aria-hidden="true">
+      <img class="d-stripe-top"    src="assets/garis-pink.svg" alt="">
+      <img class="d-x-lav"         src="assets/x-lavender.svg" alt="">
+      <img class="d-motif-r"       src="assets/motif-kuning.svg" alt="">
+      <img class="d-dot-r"         src="assets/titik-hijau.svg" alt="">
+      <img class="d-stripe-r"      src="assets/garis-pink-kanan.svg" alt="">
+      <img class="d-squiggle"      src="assets/squiggle.svg" alt="">
+      <img class="d-stripe-l"      src="assets/garis-pink-kiri.svg" alt="">
+      <img class="d-x-green"       src="assets/x-hijau.svg" alt="">
+      <img class="d-motif-l"       src="assets/motif-kuning.svg" alt="">
+      <img class="d-stripe-bottom" src="assets/garis-pink.svg" alt="">
     </div>
-    <div class="parts-scroll">
-      <div class="parts" id="parts"></div>
+    <img class="logo-indika" src="assets/logo-indika.svg" alt="Indika Foundation">
+    <div class="cover-brand">
+      <img class="logo-matappa" src="assets/logo-matappa.svg" alt="Matappa Festival">
+      <img class="badge-tanggal" src="assets/badge-tanggal.svg" alt="Makassar, 15 Oktober 2026">
+    </div>
+    <h1 class="cover-title rule" id="cover-title"></h1>
+    <p class="cover-hint" id="cover-hint"></p>
+  </section>
+
+  <!-- 02 Info: foto naskah + penjelasan. -->
+  <section id="about" class="view" aria-label="Tentang naskah">
+    <div class="deco" aria-hidden="true">
+      <img class="d-stripe-top"    src="assets/garis-pink.svg" alt="">
+      <img class="d-x-lav"         src="assets/x-lavender.svg" alt="">
+      <img class="d-motif-r"       src="assets/motif-kuning.svg" alt="">
+      <img class="d-dot-r"         src="assets/titik-hijau.svg" alt="">
+      <img class="d-stripe-r"      src="assets/garis-pink-kanan.svg" alt="">
+      <img class="d-squiggle"      src="assets/squiggle.svg" alt="">
+      <img class="d-x-green"       src="assets/x-hijau.svg" alt="">
+      <img class="d-motif-l"       src="assets/motif-kuning.svg" alt="">
+      <img class="d-stripe-bottom" src="assets/garis-pink.svg" alt="">
+    </div>
+    <div class="corner-brand">
+      <img class="logo-indika" src="assets/logo-indika.svg" alt="Indika Foundation">
+      <img class="logo-matappa" src="assets/logo-matappa.svg" alt="Matappa Festival">
+    </div>
+    <h2 class="view-title rule" id="about-title"></h2>
+    <div class="about-body">
+      <figure class="about-photo" id="about-photo">
+        <img alt="" draggable="false">
+        <figcaption id="about-photo-label"></figcaption>
+      </figure>
+      <div class="about-text">
+        <div class="about-scroll" id="about-text"></div>
+        <button id="btn-start" class="cta"></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 Daftar bagian: narasi + 12 bagian langsung di atas latar brand. -->
+  <section id="home" class="view" aria-label="Pilih bagian">
+    <div class="deco" aria-hidden="true">
+      <img class="d-stripe-top"    src="assets/garis-pink.svg" alt="">
+      <img class="d-x-lav"         src="assets/x-lavender.svg" alt="">
+      <img class="d-motif-r"       src="assets/motif-kuning.svg" alt="">
+      <img class="d-dot-r"         src="assets/titik-hijau.svg" alt="">
+      <img class="d-squiggle"      src="assets/squiggle.svg" alt="">
+      <img class="d-stripe-l"      src="assets/garis-pink-kiri.svg" alt="">
+      <img class="d-x-green"       src="assets/x-hijau.svg" alt="">
+      <img class="d-motif-l"       src="assets/motif-kuning.svg" alt="">
+      <img class="d-stripe-bottom" src="assets/garis-pink.svg" alt="">
+    </div>
+    <img class="logo-indika" src="assets/logo-indika.svg" alt="Indika Foundation">
+    <header class="home-head">
+      <img class="logo-matappa" src="assets/logo-matappa.svg" alt="Matappa Festival">
+      <p class="view-title rule" id="home-thanks"></p>
+    </header>
+    <div class="home-body">
+      <div class="intro">
+        <h2 id="home-title"></h2>
+        <div id="home-text"></div>
+      </div>
+      <div class="parts-scroll">
+        <div class="parts" id="parts"></div>
+      </div>
     </div>
   </section>
 
   <!-- Book viewer, memenuhi layar; latar (background) diatur di style.css -->
   <div class="layout">
+    <!-- Hiasan di kolom tombol kiri-kanan buku; di belakang buku dan tombol. -->
+    <div class="deco reader-deco" aria-hidden="true">
+      <img class="d-x-lav"    src="assets/x-lavender.svg" alt="">
+      <img class="d-stripe-r" src="assets/garis-pink-kanan.svg" alt="">
+      <img class="d-dot-r"    src="assets/titik-hijau.svg" alt="">
+      <img class="d-squiggle" src="assets/squiggle.svg" alt="">
+      <img class="d-stripe-l" src="assets/garis-pink-kiri.svg" alt="">
+      <img class="d-x-green"  src="assets/x-hijau.svg" alt="">
+      <img class="d-motif-l"  src="assets/motif-kuning.svg" alt="">
+    </div>
 
     <main class="stage">
       <section id="reader" class="screen active">
