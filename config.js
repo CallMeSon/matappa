@@ -7,7 +7,7 @@ window.VIEWER_CONFIG = {
   coverHint: "Sentuh layar untuk mulai",
 
   // ---------- 02 Tentang naskah ----------
-  aboutTitle: "Naskah La Galigo",
+  aboutTitle: "Naskah Asli La Galigo",
   // Foto naskah. Sementara memakai sampul Bagian 1; ganti mis. "assets/foto-naskah.jpg". Kosong = kotak placeholder.
   aboutPhoto: "naskah/part-01/001.jpg",
   aboutPhotoLabel: "FOTO\nNaskah La Galigo",
