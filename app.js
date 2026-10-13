@@ -363,7 +363,6 @@
 
   $("btn-close").addEventListener("click", () => goHome());
   $("btn-home").addEventListener("click", () => goHome("cover"));
-  $("btn-home-reader").addEventListener("click", () => goHome("cover"));
   $("status-back").addEventListener("click", () => goHome());
   $("btn-prev").addEventListener("click", () => state.flip?.flipPrev());
   $("btn-next").addEventListener("click", () => state.flip?.flipNext());

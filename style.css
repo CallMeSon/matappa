@@ -496,8 +496,6 @@ body[data-view="reading"] .brand-bg { visibility: hidden; }
 .ctl:disabled, .ctl[aria-disabled="true"] { opacity: 0.3; }
 #btn-close { background: var(--kuning); border-color: var(--kuning); color: var(--biru-tua); }
 #btn-close:active { background: var(--kuning-lembut); }
-#btn-home-reader { border-color: var(--kuning); color: var(--kuning); padding: 0; }
-#btn-home-reader .ico { width: 3.2vmin; height: 3.2vmin; }
 
 /* Tombol Beranda = ikon X bulat. Layar Tentang dan daftar bagian: kanan atas. */
 .btn-home {
@@ -531,7 +529,7 @@ body[data-view="home"] .btn-home { opacity: 1; pointer-events: auto; }
       "close book info"
       "prev  book next"
       "first book last"
-      "home  book ."
+      ".     book ."
       ".     slider .";
     grid-template-rows: auto auto auto minmax(0, 1fr) auto;
     column-gap: 2vmin;
@@ -541,7 +539,6 @@ body[data-view="home"] .btn-home { opacity: 1; pointer-events: auto; }
   #book-wrap { grid-area: book; padding: 0; }
   #slider-row { grid-area: slider; padding-top: 0.5vmin; }
   #btn-close { grid-area: close; }
-  #btn-home-reader { grid-area: home; align-self: start; justify-self: center; margin-top: 2vmin; }
   #btn-prev  { grid-area: prev;  align-self: center; justify-self: center; margin-top: 2vmin; }
   #btn-next  { grid-area: next;  align-self: center; justify-self: center; margin-top: 2vmin; }
   #btn-first { grid-area: first; align-self: center; justify-self: center; margin-top: 2vmin; }
@@ -566,7 +563,7 @@ body[data-view="home"] .btn-home { opacity: 1; pointer-events: auto; }
     padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
   }
   .controls { display: contents; }
-  #btn-first, #btn-last, #btn-home-reader { display: none; }
+  #btn-first, #btn-last { display: none; }
   #book-wrap { grid-area: book; padding: 0; }
   #slider-row { grid-area: slider; padding: 0; }
   #btn-close { grid-area: close; }
@@ -584,7 +581,7 @@ body[data-view="home"] .btn-home { opacity: 1; pointer-events: auto; }
 
 /* HP mendatar: tinggi layar sempit, buang kontrol cadangan agar kolom samping muat. */
 @media (orientation: landscape) and (max-height: 520px) {
-  #btn-first, #btn-last, #btn-home-reader { display: none; }
+  #btn-first, #btn-last { display: none; }
   #reader { grid-template-rows: auto auto minmax(0, 1fr) auto; grid-template-areas: "close book info" "prev book next" ". book ." ". slider ."; }
   .ctl { min-height: 48px; min-width: 48px; }
 }
