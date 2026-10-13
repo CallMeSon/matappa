@@ -496,36 +496,27 @@ body[data-view="reading"] .brand-bg { visibility: hidden; }
 .ctl:disabled, .ctl[aria-disabled="true"] { opacity: 0.3; }
 #btn-close { background: var(--kuning); border-color: var(--kuning); color: var(--biru-tua); }
 #btn-close:active { background: var(--kuning-lembut); }
-#btn-home-reader { border-color: var(--kuning); color: var(--kuning); }
+#btn-home-reader { border-color: var(--kuning); color: var(--kuning); padding: 0; }
+#btn-home-reader .ico { width: 3.2vmin; height: 3.2vmin; }
 
-/* Beranda di layar Tentang dan daftar bagian: kiri bawah, di atas hiasan. */
+/* Tombol Beranda = ikon X bulat. Layar Tentang dan daftar bagian: kanan atas. */
 .btn-home {
   position: fixed;
   z-index: 5;
-  left: calc(79 * var(--u));
-  top: calc(330 * var(--u));
-  min-height: max(56px, calc(84 * var(--u)));
-  padding: 0 calc(40 * var(--u));
-  background: rgba(5, 20, 50, 0.55);
-  border-color: var(--kuning);
-  color: var(--kuning);
-  font: 700 calc(30 * var(--u)) / 1 var(--font-display);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.6s ease;
-}
-.btn-home .ico { display: none; width: calc(36 * var(--u)); height: calc(36 * var(--u)); }
-/* Layar Tentang: hanya ikon X di kanan atas supaya tidak mengganggu narasi. */
-body[data-view="about"] .btn-home {
-  left: auto;
   right: calc(40 * var(--u));
   top: calc(40 * var(--u));
   width: max(56px, calc(84 * var(--u)));
   min-width: 0;
+  min-height: max(56px, calc(84 * var(--u)));
   padding: 0;
+  background: rgba(5, 20, 50, 0.55);
+  border-color: var(--kuning);
+  color: var(--kuning);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
 }
-body[data-view="about"] .btn-home .lbl { display: none; }
-body[data-view="about"] .btn-home .ico { display: block; }
+.ico { width: calc(36 * var(--u)); height: calc(36 * var(--u)); min-width: 20px; min-height: 20px; display: block; }
 body[data-view="about"] .btn-home,
 body[data-view="home"] .btn-home { opacity: 1; pointer-events: auto; }
 #page-info { text-align: center; font-variant-numeric: tabular-nums; }
