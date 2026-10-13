@@ -514,6 +514,18 @@ body[data-view="reading"] .brand-bg { visibility: hidden; }
   pointer-events: none;
   transition: opacity 0.6s ease;
 }
+.btn-home .ico { display: none; width: calc(36 * var(--u)); height: calc(36 * var(--u)); }
+/* Layar Tentang: hanya ikon X di kanan atas supaya tidak mengganggu narasi. */
+body[data-view="about"] .btn-home {
+  left: auto;
+  right: calc(40 * var(--u));
+  top: calc(40 * var(--u));
+  width: max(56px, calc(84 * var(--u)));
+  min-width: 0;
+  padding: 0;
+}
+body[data-view="about"] .btn-home .lbl { display: none; }
+body[data-view="about"] .btn-home .ico { display: block; }
 body[data-view="about"] .btn-home,
 body[data-view="home"] .btn-home { opacity: 1; pointer-events: auto; }
 #page-info { text-align: center; font-variant-numeric: tabular-nums; }
