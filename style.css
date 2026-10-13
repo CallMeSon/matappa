@@ -684,6 +684,69 @@ body[data-view="home"] .btn-home { opacity: 1; pointer-events: auto; }
 }
 .status.hidden { opacity: 0; pointer-events: none; }
 
+/* ---------- Animasi masuk antar layar ----------
+   Tiap layar menyusun isinya bertahap saat aktif. Animasi dimulai ulang setiap kali layar dibuka,
+   dan `backwards` melepas transform sesudahnya agar efek sentuh (:active) tetap berfungsi. */
+:root { --ease-out: cubic-bezier(0.16, 1, 0.3, 1); }
+@keyframes rise {
+  from { opacity: 0; transform: translateY(calc(28 * var(--u))); }
+}
+@keyframes pop {
+  from { opacity: 0; transform: scale(0.94); }
+}
+@keyframes slide-in {
+  from { opacity: 0; transform: translateX(calc(-36 * var(--u))); }
+}
+@keyframes drift {
+  from { opacity: 0; transform: translateY(calc(-16 * var(--u))); }
+}
+body[data-view="cover"] #cover .logo-indika,
+body[data-view="cover"] #cover .logo-matappa,
+body[data-view="cover"] #cover .badge-tanggal,
+body[data-view="cover"] #cover .cover-title,
+body[data-view="about"] #about .corner-brand,
+body[data-view="about"] #about .view-title,
+body[data-view="about"] #about .about-photo,
+body[data-view="about"] #about .about-scroll,
+body[data-view="about"] #about .cta,
+body[data-view="home"] #home .logo-indika,
+body[data-view="home"] #home .home-head,
+body[data-view="home"] #home .intro,
+body[data-view="home"] #home .part {
+  animation: rise 0.8s var(--ease-out) var(--d, 0s) backwards;
+}
+body[data-view="cover"] #cover .logo-indika { --d: 0.05s; animation-name: drift; }
+body[data-view="cover"] #cover .logo-matappa { --d: 0.15s; animation-name: pop; }
+body[data-view="cover"] #cover .badge-tanggal { --d: 0.3s; animation-name: slide-in; }
+body[data-view="cover"] #cover .cover-title { --d: 0.45s; }
+body[data-view="about"] #about .corner-brand { --d: 0.05s; animation-name: drift; }
+body[data-view="about"] #about .view-title { --d: 0.15s; }
+body[data-view="about"] #about .about-photo { --d: 0.25s; animation-name: pop; }
+body[data-view="about"] #about .about-scroll { --d: 0.4s; }
+body[data-view="about"] #about .cta { --d: 0.55s; }
+body[data-view="home"] #home .logo-indika { --d: 0.05s; animation-name: drift; }
+body[data-view="home"] #home .home-head { --d: 0.1s; }
+body[data-view="home"] #home .intro { --d: 0.25s; }
+body[data-view="home"] #home .part { --d: calc(0.35s + var(--i, 0) * 0.04s); animation-name: pop; animation-duration: 0.6s; }
+/* Dekorasi memudar masuk, tanpa gerak. */
+body:not([data-view="reading"]) .view .deco img { animation: fade-in 1s ease 0.2s backwards; }
+@keyframes fade-in { from { opacity: 0; } }
+
+/* Layar baca: buku muncul membesar, kontrol naik. */
+body[data-view="reading"] #book-wrap { animation: pop 0.7s var(--ease-out) 0.1s backwards; }
+body[data-view="reading"] #slider-row,
+body[data-view="reading"] .controls .ctl { animation: rise 0.6s var(--ease-out) 0.25s backwards; }
+
+/* Sentuhan memberi umpan balik: tombol mengecil sedikit saat ditekan. */
+.ctl { transition: transform 0.15s var(--ease-out), background-color 0.2s, border-color 0.2s; }
+.ctl:active { transform: scale(0.94); }
+.btn-home { transition: opacity 0.6s ease, transform 0.15s var(--ease-out), background-color 0.2s; }
+@media (hover: hover) {
+  .part:hover .part-thumb { transform: translateY(calc(-6 * var(--u))); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .cover-hint { animation: none; }
+  .view *, #book-wrap, #slider-row, .controls .ctl { animation: none !important; }
+  .ctl, .part-thumb { transition: none; }
 }

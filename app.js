@@ -63,6 +63,7 @@
   for (const part of parts) {
     const btn = document.createElement("button");
     btn.className = "part";
+    btn.style.setProperty("--i", $("parts").children.length);
     btn.innerHTML = `
       <div class="part-thumb"><img alt="" draggable="false"></div>
       <span class="part-label"></span>
