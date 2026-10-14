@@ -53,12 +53,6 @@
 
   // ---------- 03 Daftar bagian ----------
   $("home-thanks").textContent = cfg.thanks;
-  $("home-title").textContent = cfg.title;
-  for (const text of cfg.intro) {
-    const p = document.createElement("p");
-    p.textContent = text;
-    $("home-text").appendChild(p);
-  }
 
   for (const part of parts) {
     const btn = document.createElement("button");

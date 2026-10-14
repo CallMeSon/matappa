@@ -288,28 +288,8 @@ body[data-view="reading"] .brand-bg { visibility: hidden; }
   width: min(calc(1260 * var(--u)), 100%);
   min-height: 0;
   display: grid;
-  grid-template-columns: calc(400 * var(--u)) minmax(0, 1fr);
-  gap: calc(56 * var(--u));
+  grid-template-columns: minmax(0, 1fr);
 }
-
-.intro {
-  align-self: center;
-  max-height: 100%;
-  overflow-y: auto;
-}
-.intro h2 {
-  font: 700 calc(76 * var(--u)) / 1.02 var(--font-display);
-  letter-spacing: -0.015em;
-  color: var(--kuning);
-  text-wrap: balance;
-}
-#home-text { margin-top: calc(28 * var(--u)); }
-.intro p {
-  font-size: var(--fs-body);
-  line-height: 1.6;
-  text-wrap: pretty;
-}
-.intro p + p { margin-top: 0.8em; }
 
 .parts-scroll {
   min-height: 0;
@@ -354,9 +334,6 @@ body[data-view="reading"] .brand-bg { visibility: hidden; }
 
   #home { padding: calc(60 * var(--u)) calc(90 * var(--u)) calc(160 * var(--u)); row-gap: calc(40 * var(--u)); }
   .home-head { padding-top: calc(110 * var(--u)); }
-  .home-body { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); gap: calc(40 * var(--u)); }
-  .intro { align-self: start; max-height: none; overflow: visible; }
-  .intro h2 { font-size: calc(64 * var(--u)); }
   .parts-scroll { justify-content: flex-start; }
   .parts { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: calc(36 * var(--u)) calc(28 * var(--u)); }
 }
@@ -711,7 +688,6 @@ body[data-view="about"] #about .about-scroll,
 body[data-view="about"] #about .cta,
 body[data-view="home"] #home .logo-indika,
 body[data-view="home"] #home .home-head,
-body[data-view="home"] #home .intro,
 body[data-view="home"] #home .part {
   animation: rise 0.8s var(--ease-out) var(--d, 0s) backwards;
 }
@@ -726,7 +702,6 @@ body[data-view="about"] #about .about-scroll { --d: 0.4s; }
 body[data-view="about"] #about .cta { --d: 0.55s; }
 body[data-view="home"] #home .logo-indika { --d: 0.05s; animation-name: drift; }
 body[data-view="home"] #home .home-head { --d: 0.1s; }
-body[data-view="home"] #home .intro { --d: 0.25s; }
 body[data-view="home"] #home .part { --d: calc(0.35s + var(--i, 0) * 0.04s); animation-name: pop; animation-duration: 0.6s; }
 /* Dekorasi memudar masuk, tanpa gerak. */
 body:not([data-view="reading"]) .view .deco img { animation: fade-in 1s ease 0.2s backwards; }
