@@ -178,7 +178,8 @@ body[data-view="reading"] .brand-bg { visibility: hidden; }
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   justify-items: center;
-  row-gap: calc(43 * var(--u));
+  --about-gap: calc(44 * var(--u));
+  row-gap: var(--about-gap);
   padding: calc(100 * var(--u)) calc(340 * var(--u)) calc(70 * var(--u));
 }
 .view-title { position: relative; max-width: 100%; }
@@ -190,20 +191,21 @@ body[data-view="reading"] .brand-bg { visibility: hidden; }
   width: min(calc(1200 * var(--u)), 100%);
   min-height: 0;
   display: grid;
-  grid-template-columns: calc(580 * var(--u)) minmax(0, 1fr);
-  gap: calc(48 * var(--u));
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: var(--about-gap);
 }
 .about-photo {
   position: relative;
-  align-self: center;
-  aspect-ratio: 0.74;
-  max-height: 100%;
+  width: min(calc(720 * var(--u)), 100%);
+  justify-self: center;
+  aspect-ratio: 2.57; /* rasio foto-naskah.webp (1091x424) */
   border-radius: calc(40 * var(--u));
-  background: var(--warm-white);
+  background: #fff;
   overflow: hidden;
   box-shadow: 0 calc(16 * var(--u)) calc(48 * var(--u)) rgba(5, 20, 50, 0.35);
 }
-.about-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.about-photo img { width: 100%; height: 100%; object-fit: contain; display: block; }
 .about-photo figcaption {
   position: absolute;
   inset: 0;
@@ -235,7 +237,7 @@ body[data-view="reading"] .brand-bg { visibility: hidden; }
   /* Teks rata tengah secara vertikal bila muat; "safe" agar awal teks tidak terpotong. */
   display: flex;
   flex-direction: column;
-  justify-content: safe center;
+  justify-content: flex-start;
 }
 .about-scroll p {
   font-size: var(--fs-body);
@@ -247,7 +249,7 @@ body[data-view="reading"] .brand-bg { visibility: hidden; }
 .cta {
   all: unset;
   cursor: pointer;
-  align-self: flex-start;
+  align-self: flex-end;
   display: inline-flex;
   align-items: center;
   gap: 0.6em;
@@ -324,13 +326,13 @@ body[data-view="reading"] .brand-bg { visibility: hidden; }
 
   #cover { padding: calc(260 * var(--u)) calc(90 * var(--u)) calc(220 * var(--u)); }
 
-  #about { padding: calc(330 * var(--u)) calc(90 * var(--u)) calc(200 * var(--u)); row-gap: calc(40 * var(--u)); }
+  #about { padding: calc(330 * var(--u)) calc(90 * var(--u)) calc(200 * var(--u)); }
   .corner-brand { gap: calc(24 * var(--u)); }
   .corner-brand .logo-indika { width: calc(200 * var(--u)); }
   .corner-brand .logo-matappa { width: calc(230 * var(--u)); }
   .about-body { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); }
-  .about-photo { justify-self: center; width: calc(520 * var(--u)); }
-  .cta { align-self: center; }
+  .about-photo { justify-self: center; width: min(calc(700 * var(--u)), 100%); }
+  .cta { align-self: flex-end; }
 
   #home { padding: calc(60 * var(--u)) calc(90 * var(--u)) calc(160 * var(--u)); row-gap: calc(40 * var(--u)); }
   .home-head { padding-top: calc(110 * var(--u)); }
