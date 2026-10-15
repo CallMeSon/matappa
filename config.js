@@ -8,8 +8,8 @@ window.VIEWER_CONFIG = {
 
   // ---------- 02 Tentang naskah ----------
   aboutTitle: "Naskah Asli La Galigo",
-  // Foto naskah. Sementara memakai sampul Bagian 1; ganti mis. "assets/foto-naskah.jpg". Kosong = kotak placeholder.
-  aboutPhoto: "naskah/part-01/001.jpg",
+  // Foto naskah. Kosong = kotak placeholder.
+  aboutPhoto: "assets/foto-naskah.webp",
   aboutPhotoLabel: "FOTO\nNaskah La Galigo",
   // Teks penjelasan. Ganti dengan wording final. Teks panjang bisa di-scroll.
   aboutText: [
